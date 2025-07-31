@@ -5,7 +5,7 @@ info:
   description: API para gestionar facturas, incidencias, clientes, albaranes y presupuestos.
 
 servers:
-  - url: https://app.stelorder.com/app
+  - url: https://app.stelorder.com/app/indexapi.html
 
 paths:
   /clients:
@@ -42,3 +42,4 @@ paths:
       responses:
         '200':
           description: Lista de presupuestos
+
