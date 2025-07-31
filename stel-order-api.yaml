@@ -32,9 +32,3 @@ paths:
                     estado: "Pendiente de facturar"
                     fecha: "2025-07-25"
                     total: 154.90
-                  - id: 98766
-                    title: "412029439/0010"
-                    cliente: "WashTec España S.L."
-                    estado: "Planificado"
-                    fecha: "2025-07-28"
-                    total: 240.00
