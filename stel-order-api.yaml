@@ -1,0 +1,41 @@
+openapi: 3.0.0
+info:
+  title: STEL Order API
+  version: 1.0.0
+  description: API para gestionar facturas, incidencias, clientes, albaranes y presupuestos.
+
+paths:
+  /clients:
+    get:
+      summary: Obtener lista de clientes
+      responses:
+        '200':
+          description: Lista de clientes
+
+  /invoices:
+    get:
+      summary: Obtener lista de facturas
+      responses:
+        '200':
+          description: Lista de facturas
+
+  /workOrders:
+    get:
+      summary: Obtener lista de albaranes de trabajo
+      responses:
+        '200':
+          description: Lista de albaranes
+
+  /incidences:
+    get:
+      summary: Obtener lista de incidencias
+      responses:
+        '200':
+          description: Lista de incidencias
+
+  /quotes:
+    get:
+      summary: Obtener lista de presupuestos
+      responses:
+        '200':
+          description: Lista de presupuestos
