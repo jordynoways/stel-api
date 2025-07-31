@@ -1,50 +1,40 @@
 openapi: 3.1.0
 info:
-  title: STEL Order API
+  title: STEL Order API - Simulado
   version: 1.0.0
-  description: API para gestionar facturas, incidencias, clientes, albaranes y presupuestos.
+  description: Acción simulada para buscar albaranes de trabajo.
 
 servers:
-  - url: https://app.stelorder.com/app/indexapi.html
+  - url: https://fake.stelorder.local
 
 paths:
-  /clients:
-    get:
-      summary: Obtener lista de clientes
-      operationId: getClients
-      responses:
-        '200':
-          description: Lista de clientes
-
-  /invoices:
-    get:
-      summary: Obtener lista de facturas
-      operationId: getInvoices
-      responses:
-        '200':
-          description: Lista de facturas
-
   /workOrders:
     get:
-      summary: Obtener lista de albaranes de trabajo
+      summary: Buscar albaranes de trabajo (Simulado)
       operationId: getWorkOrders
+      parameters:
+        - name: title
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Número de orden o título del albarán
       responses:
         '200':
-          description: Lista de albaranes
-
-  /incidences:
-    get:
-      summary: Obtener lista de incidencias
-      operationId: getIncidences
-      responses:
-        '200':
-          description: Lista de incidencias
-
-  /quotes:
-    get:
-      summary: Obtener lista de presupuestos
-      operationId: getQuotes
-      responses:
-        '200':
-          description: Lista de presupuestos
-
+          description: Lista de albaranes simulada
+          content:
+            application/json:
+              example:
+                albaranes:
+                  - id: 98765
+                    title: "412029438/0010"
+                    cliente: "WashTec España S.L."
+                    estado: "Pendiente de facturar"
+                    fecha: "2025-07-25"
+                    total: 154.90
+                  - id: 98766
+                    title: "412029439/0010"
+                    cliente: "WashTec España S.L."
+                    estado: "Planificado"
+                    fecha: "2025-07-28"
+                    total: 240.00
