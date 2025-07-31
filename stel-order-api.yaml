@@ -36,4 +36,4 @@ paths:
           description: Número de orden o título del albarán
       responses:
         '200':
-          description: Lista de albaranes simulada
+          description: Lista de albaranes simulada 
