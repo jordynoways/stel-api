@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: STEL Order API - Albaranes Simulado
+  title: STEL Order API - Albaranes Simulado (Mock Data)
   version: 1.0.0
   description: Acción simulada para buscar albaranes de trabajo.
 
@@ -10,9 +10,23 @@ servers:
 paths:
   /workDeliveryNotes:
     get:
-      summary: Buscar albaranes de trabajo (Simulado)
+      summary: Buscar albaranes de trabajo (Mock)
       operationId: getWorkDeliveryNotes
       x-openai-isMock: true
+      x-openai-data:
+        albaranes:
+          - id: 98765
+            title: "412029438/0010"
+            cliente: "WashTec España S.L."
+            estado: "Pendiente de facturar"
+            fecha: "2025-07-25"
+            total: 154.90
+          - id: 98766
+            title: "412029439/0010"
+            cliente: "WashTec España S.L."
+            estado: "Planificado"
+            fecha: "2025-07-28"
+            total: 240.00
       parameters:
         - name: title
           in: query
@@ -23,20 +37,3 @@ paths:
       responses:
         '200':
           description: Lista de albaranes simulada
-          content:
-            application/json:
-              example:
-                albaranes:
-                  - id: 98765
-                    title: "412029438/0010"
-                    cliente: "WashTec España S.L."
-                    estado: "Pendiente de facturar"
-                    fecha: "2025-07-25"
-                    total: 154.90
-                  - id: 98766
-                    title: "412029439/0010"
-                    cliente: "WashTec España S.L."
-                    estado: "Planificado"
-                    fecha: "2025-07-28"
-                    total: 240.00
-
