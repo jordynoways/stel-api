@@ -4,6 +4,9 @@ info:
   version: 1.0.0
   description: API para gestionar facturas, incidencias, clientes, albaranes y presupuestos.
 
+servers:
+  - url: https://app.stelorder.com/app
+
 paths:
   /clients:
     get:
