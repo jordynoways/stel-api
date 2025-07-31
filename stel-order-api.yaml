@@ -12,6 +12,7 @@ paths:
     get:
       summary: Buscar albaranes de trabajo (Simulado)
       operationId: getWorkOrders
+      x-openai-isMock: true
       parameters:
         - name: title
           in: query
@@ -32,3 +33,4 @@ paths:
                     estado: "Pendiente de facturar"
                     fecha: "2025-07-25"
                     total: 154.90
+
