@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.1.0
 info:
   title: STEL Order API
   version: 1.0.0
@@ -11,6 +11,7 @@ paths:
   /clients:
     get:
       summary: Obtener lista de clientes
+      operationId: getClients
       responses:
         '200':
           description: Lista de clientes
@@ -18,6 +19,7 @@ paths:
   /invoices:
     get:
       summary: Obtener lista de facturas
+      operationId: getInvoices
       responses:
         '200':
           description: Lista de facturas
@@ -25,6 +27,7 @@ paths:
   /workOrders:
     get:
       summary: Obtener lista de albaranes de trabajo
+      operationId: getWorkOrders
       responses:
         '200':
           description: Lista de albaranes
@@ -32,6 +35,7 @@ paths:
   /incidences:
     get:
       summary: Obtener lista de incidencias
+      operationId: getIncidences
       responses:
         '200':
           description: Lista de incidencias
@@ -39,6 +43,7 @@ paths:
   /quotes:
     get:
       summary: Obtener lista de presupuestos
+      operationId: getQuotes
       responses:
         '200':
           description: Lista de presupuestos
