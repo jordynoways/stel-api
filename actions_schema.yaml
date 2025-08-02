@@ -14,7 +14,7 @@ servers:
 
 paths:
   ## Search work orders by title or order number
-  /work-orders/search:
+  /workOrders/search:
     get:
       summary: Search work orders
       description: |
@@ -56,7 +56,7 @@ paths:
         - ApiKeyAuth: []
 
   ## Retrieve details of a specific work order
-  /work-orders/{id}:
+  /workOrders/{id}:
     get:
       summary: Get work order details
       description: Retrieves detailed information about a specific work order by its unique identifier.
@@ -81,7 +81,7 @@ paths:
         - ApiKeyAuth: []
 
   ## List work orders pending invoicing
-  /work-orders/pending:
+  /workOrders/pending:
     get:
       summary: List pending work orders
       description: |
@@ -117,7 +117,7 @@ paths:
         - ApiKeyAuth: []
 
   ## Upload an attachment to a work order
-  /work-orders/{id}/attachments:
+  /workOrders/{id}/attachments:
     post:
       summary: Upload work order attachment
       description: Adds a file attachment to the specified work order. Attachments can include
@@ -167,7 +167,7 @@ paths:
         - ApiKeyAuth: []
 
   ## Create a new work order
-  /work-orders:
+  /workOrders:
     post:
       summary: Create a work order
       description: Creates a new work order in STEL Order. The payload should include
@@ -197,11 +197,18 @@ components:
     ApiKeyAuth:
       type: apiKey
       in: header
-      name: Authorization
+      # The STEL Order API expects the key to be sent in a custom header called
+      # `APIKEY` without any prefix. Using another header name (e.g. Authorization)
+      # will cause the server to reject the request as invalid. See the official
+      # documentation at https://app.stelorder.com/app/indexapi.html for details.
+      name: APIKEY
       description: |
-        All requests must supply an API key in the `Authorization` header using the format
-        `ApiKey 0RjnBmi37UswuylVpjIyi7I6gvX54i2ShBnJLsC0`.  Esta es la clave de API proporcionada
-        para tu entorno de STEL Order.
+        All requests must supply an API key in the `APIKEY` header without any
+        prefix. For example, a request should send a header like:
+        
+        `APIKEY: 0RjnBmi37UswuylVpjIyi7I6gvX54i2ShBnJLsC0`
+        
+        Esta es la clave de API proporcionada para tu entorno de STEL Order.
   schemas:
     ## Schema representing a work order
     WorkOrder:
