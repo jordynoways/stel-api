@@ -25,14 +25,25 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-              example:
-                - id: 12345
-                  title: "412029438/0010"
-                  cliente: "WashTec España S.L."
-                  estado: "Pendiente de facturar"
-                  fecha: "2025-07-25"
-                  total: 154.90
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    title:
+                      type: string
+                    cliente:
+                      type: string
+                    estado:
+                      type: string
+                    fecha:
+                      type: string
+                    total:
+                      type: number
+                  required:
+                    - id
+                    - title
       security:
         - ApiKeyAuth: []
 
@@ -42,4 +53,5 @@ components:
       type: apiKey
       in: header
       name: Authorization
+
 
