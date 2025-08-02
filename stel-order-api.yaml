@@ -5,39 +5,39 @@ info:
   description: |
     This OpenAPI specification defines the endpoints used by the GPT agent
     to interact with the STEL Order service.  The API allows searching for
-    work orders (albaranes), retrieving detailed information, listing
-    pending work orders, uploading attachments and creating new work orders.
+    work delivery orders (albaranes), retrieving detailed information, listing
+    pending work delivery orders, uploading attachments and creating new work delivery orders.
     All requests must include an API key provided by STEL Order in the
-    `Authorization` header using the format `ApiKey <your-api-key>`.
+    custom `APIKEY` header. The key must be sent as `APIKEY: <your-api-key>` without any prefix.
 servers:
   - url: https://app.stelorder.com/app
 
 paths:
-  ## Search work orders by title or order number
-  /workOrders/search:
+  ## Search work delivery orders by title or order number
+  /workDeliveryOrders/search:
     get:
       summary: Search work orders
       description: |
-        Searches work orders (albaranes de trabajo) by order number or title. At least one
+        Searches work delivery orders (albaranes de trabajo) by order number or title. At least one
         of the query parameters `title` or `orderNumber` must be provided. The endpoint
-        returns a list of matching work orders with summary information.
+        returns a list of matching work delivery orders with summary information.
       operationId: searchWorkOrders
       parameters:
         - name: title
           in: query
-          description: Search by the title of the work order.
+          description: Search by the title of the work delivery order.
           required: false
           schema:
             type: string
         - name: orderNumber
           in: query
-          description: Search by the internal order number of the work order.
+          description: Search by the internal order number of the work delivery order.
           required: false
           schema:
             type: string
       responses:
         '200':
-          description: A list of work orders matching the search criteria.
+          description: A list of work delivery orders matching the search criteria.
           content:
             application/json:
               schema:
@@ -55,39 +55,39 @@ paths:
       security:
         - ApiKeyAuth: []
 
-  ## Retrieve details of a specific work order
-  /workOrders/{id}:
+  ## Retrieve details of a specific work delivery order
+  /workDeliveryOrders/{id}:
     get:
-      summary: Get work order details
-      description: Retrieves detailed information about a specific work order by its unique identifier.
+      summary: Get work delivery order details
+      description: Retrieves detailed information about a specific work delivery order by its unique identifier.
       operationId: getWorkOrderDetails
       parameters:
         - name: id
           in: path
-          description: Unique identifier of the work order to fetch.
+          description: Unique identifier of the work delivery order to fetch.
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Detailed information about the requested work order.
+          description: Detailed information about the requested work delivery order.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkOrder'
         '404':
-          description: Work order not found.
+          description: Work delivery order not found.
       security:
         - ApiKeyAuth: []
 
-  ## List work orders pending invoicing
-  /workOrders/pending:
+  ## List work delivery orders pending invoicing
+  /workDeliveryOrders/pending:
     get:
       summary: List pending work orders
       description: |
-        Returns a list of work orders that are pending invoicing. The `documentStateId`
+        Returns a list of work delivery orders that are pending invoicing. The `documentStateId`
         parameter allows filtering by the state identifier of the document.  This endpoint
-        is useful for retrieving all pending work orders for billing.
+        is useful for retrieving all pending work delivery orders for billing.
       operationId: listPendingWorkOrders
       parameters:
         - name: documentStateId
@@ -99,7 +99,7 @@ paths:
             type: string
       responses:
         '200':
-          description: A list of pending work orders.
+          description: A list of pending work delivery orders.
           content:
             application/json:
               schema:
@@ -116,17 +116,17 @@ paths:
       security:
         - ApiKeyAuth: []
 
-  ## Upload an attachment to a work order
-  /workOrders/{id}/attachments:
+  ## Upload an attachment to a work delivery order
+  /workDeliveryOrders/{id}/attachments:
     post:
-      summary: Upload work order attachment
-      description: Adds a file attachment to the specified work order. Attachments can include
-        files such as images or PDFs that relate to the work order.
+      summary: Upload work delivery order attachment
+      description: Adds a file attachment to the specified work delivery order. Attachments can include
+        files such as images or PDFs that relate to the work delivery order.
       operationId: uploadWorkOrderAttachment
       parameters:
         - name: id
           in: path
-          description: Unique identifier of the work order to which the attachment will be uploaded.
+          description: Unique identifier of the work delivery order to which the attachment will be uploaded.
           required: true
           schema:
             type: string
@@ -160,17 +160,17 @@ paths:
                     type: string
                     description: URL where the attachment can be accessed.
         '404':
-          description: Work order not found.
+          description: Work delivery order not found.
         '415':
           description: Unsupported media type or invalid file upload.
       security:
         - ApiKeyAuth: []
 
-  ## Create a new work order
-  /workOrders:
+  ## Create a new work delivery order
+  /workDeliveryOrders:
     post:
-      summary: Create a work order
-      description: Creates a new work order in STEL Order. The payload should include
+      summary: Create a work delivery order
+      description: Creates a new work delivery order in STEL Order. The payload should include
         mandatory fields such as title, client, and date, and may include additional
         optional details such as line items and totals.
       operationId: createWorkOrder
@@ -182,7 +182,7 @@ paths:
               $ref: '#/components/schemas/NewWorkOrder'
       responses:
         '201':
-          description: Work order created successfully.
+          description: Work delivery order created successfully.
           content:
             application/json:
               schema:
@@ -216,33 +216,33 @@ components:
       properties:
         id:
           type: string
-          description: Unique identifier of the work order.
+          description: Unique identifier of the work delivery order.
         title:
           type: string
-          description: Title or reference of the work order.
+          description: Title or reference of the work delivery order.
         client:
           type: string
-          description: Name of the client associated with the work order.
+          description: Name of the client associated with the work delivery order.
         total:
           type: number
           format: float
-          description: Total amount for the work order.
+          description: Total amount for the work delivery order.
         date:
           type: string
           format: date
-          description: Date when the work order was created.
+          description: Date when the work delivery order was created.
         status:
           type: string
-          description: Current status of the work order (e.g., pending, invoiced).
+          description: Current status of the work delivery order (e.g., pending, invoiced).
         documentStateId:
           type: string
           description: Internal document state identifier used by STEL Order.
         items:
           type: array
-          description: List of items included in the work order.
+          description: List of items included in the work delivery order.
           items:
             $ref: '#/components/schemas/WorkOrderItem'
-    ## Schema representing an item within a work order
+    ## Schema representing an item within a work delivery order
     WorkOrderItem:
       type: object
       properties:
@@ -261,7 +261,7 @@ components:
           type: number
           format: float
           description: Total price for this item (quantity × unitPrice).
-    ## Schema representing the payload required to create a new work order
+    ## Schema representing the payload required to create a new work delivery order
     NewWorkOrder:
       type: object
       required:
@@ -271,18 +271,18 @@ components:
       properties:
         title:
           type: string
-          description: Title or reference for the new work order.
+          description: Title or reference for the new work delivery order.
         client:
           type: string
-          description: Name of the client for whom the work order is created.
+          description: Name of the client for whom the work delivery order is created.
         date:
           type: string
           format: date
-          description: Date of the work order (YYYY-MM-DD).
+          description: Date of the work delivery order (YYYY-MM-DD).
         items:
           type: array
           items:
             $ref: '#/components/schemas/WorkOrderItem'
         notes:
           type: string
-          description: Additional notes or comments about the work order.
+          description: Additional notes or comments about the work delivery order.
