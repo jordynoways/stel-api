@@ -9,7 +9,8 @@ info:
     Todas las peticiones deben incluir la clave de API de STEL Order en la cabecera `APIKEY` sin prefijo.
 
 servers:
-  - url: https://app.stelorder.com/app
+ servers:
+  - url: https://api.stelorder.com
 
 paths:
   /workDeliveryOrders/search:
