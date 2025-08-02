@@ -1,17 +1,12 @@
 openapi: 3.1.0
 info:
   title: STEL Order API Integration
-  version: 1.0.0
+  version: 1.0.1
   description: |
-    Esta especificación OpenAPI define los endpoints usados por el agente GPT
-    para interactuar con el servicio STEL Order. Permite buscar albaranes, 
-    obtener detalles, listar albaranes pendientes de facturar, subir adjuntos y crear albaranes.
-    Todas las peticiones deben incluir la clave de API de STEL Order en la cabecera `APIKEY` sin prefijo.
-
+    Integración con la API de STEL Order para gestionar albaranes de trabajo.
+    Todas las peticiones deben incluir el header: APIKEY: 0RjnBmi37UswuylVpjIyi7I6gvX54i2ShBnJLsC0
 servers:
- servers:
   - url: https://api.stelorder.com
-
 paths:
   /workDeliveryOrders/search:
     get:
@@ -20,19 +15,17 @@ paths:
       parameters:
         - name: title
           in: query
-          description: Buscar por título del albarán.
           required: false
           schema:
             type: string
         - name: orderNumber
           in: query
-          description: Buscar por número de orden interna.
           required: false
           schema:
             type: string
       responses:
         "200":
-          description: Lista de albaranes coincidentes.
+          description: Lista de albaranes encontrados
           content:
             application/json:
               schema:
@@ -44,14 +37,9 @@ paths:
                       $ref: "#/components/schemas/WorkOrder"
                   count:
                     type: integer
-        "400":
-          description: Parámetros inválidos.
-      security:
-        - ApiKeyAuth: []
-
   /workDeliveryOrders/{id}:
     get:
-      summary: Obtener detalles del albarán
+      summary: Detalles del albarán
       operationId: getWorkOrderDetails
       parameters:
         - name: id
@@ -61,19 +49,14 @@ paths:
             type: string
       responses:
         "200":
-          description: Detalles del albarán.
+          description: Detalles del albarán
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/WorkOrder"
-        "404":
-          description: No encontrado.
-      security:
-        - ApiKeyAuth: []
-
   /workDeliveryOrders/pending:
     get:
-      summary: Listar albaranes pendientes de facturar
+      summary: Albaranes pendientes de facturar
       operationId: listPendingWorkOrders
       parameters:
         - name: documentStateId
@@ -83,7 +66,7 @@ paths:
             type: string
       responses:
         "200":
-          description: Lista de albaranes pendientes.
+          description: Albaranes pendientes
           content:
             application/json:
               schema:
@@ -95,14 +78,26 @@ paths:
                       $ref: "#/components/schemas/WorkOrder"
                   count:
                     type: integer
-        "400":
-          description: Parámetros inválidos.
-      security:
-        - ApiKeyAuth: []
-
+  /workDeliveryOrders:
+    post:
+      summary: Crear nuevo albarán
+      operationId: createWorkOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewWorkOrder"
+      responses:
+        "201":
+          description: Albarán creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkOrder"
   /workDeliveryOrders/{id}/attachments:
     post:
-      summary: Subir adjunto a albarán
+      summary: Subir adjunto a un albarán
       operationId: uploadWorkOrderAttachment
       parameters:
         - name: id
@@ -116,15 +111,13 @@ paths:
           multipart/form-data:
             schema:
               type: object
-              required:
-                - file
               properties:
                 file:
                   type: string
                   format: binary
       responses:
         "201":
-          description: Adjunto subido correctamente.
+          description: Archivo adjunto subido
           content:
             application/json:
               schema:
@@ -136,46 +129,12 @@ paths:
                     type: string
                   url:
                     type: string
-        "404":
-          description: Albarán no encontrado.
-        "415":
-          description: Formato no soportado.
-      security:
-        - ApiKeyAuth: []
-
-  /workDeliveryOrders:
-    post:
-      summary: Crear albarán de trabajo
-      operationId: createWorkOrder
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/NewWorkOrder"
-      responses:
-        "201":
-          description: Albarán creado correctamente.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/WorkOrder"
-        "400":
-          description: Payload inválido.
-      security:
-        - ApiKeyAuth: []
-
 components:
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
       in: header
       name: APIKEY
-      description: |
-        Todas las solicitudes deben incluir la clave API en el encabezado `APIKEY`.
-        Ejemplo:
-        APIKEY: 0RjnBmi37UswuylVpjIyi7I6gvX54i2ShBnJLsC0
-
   schemas:
     WorkOrder:
       type: object
@@ -188,10 +147,8 @@ components:
           type: string
         total:
           type: number
-          format: float
         date:
           type: string
-          format: date
         status:
           type: string
         documentStateId:
@@ -200,7 +157,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/WorkOrderItem"
-
     WorkOrderItem:
       type: object
       properties:
@@ -208,14 +164,10 @@ components:
           type: string
         quantity:
           type: number
-          format: float
         unitPrice:
           type: number
-          format: float
         total:
           type: number
-          format: float
-
     NewWorkOrder:
       type: object
       required:
@@ -229,7 +181,6 @@ components:
           type: string
         date:
           type: string
-          format: date
         items:
           type: array
           items:
