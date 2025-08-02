@@ -25,25 +25,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    title:
-                      type: string
-                    cliente:
-                      type: string
-                    estado:
-                      type: string
-                    fecha:
-                      type: string
-                    total:
-                      type: number
-                  required:
-                    - id
-                    - title
+                $ref: '#/components/schemas/AlbaranResponse'
       security:
         - ApiKeyAuth: []
 
@@ -54,4 +36,30 @@ components:
       in: header
       name: Authorization
 
+  schemas:
+    Albaran:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        cliente:
+          type: string
+        estado:
+          type: string
+        fecha:
+          type: string
+        total:
+          type: number
+      required:
+        - id
+        - title
 
+    AlbaranResponse:
+      type: object
+      properties:
+        albaranes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Albaran'
