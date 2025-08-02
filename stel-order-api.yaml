@@ -1,39 +1,44 @@
 openapi: 3.1.0
 info:
-  title: STEL Order API - Albaranes Simulado (Mock Data)
+  title: STEL Order API - Albaranes reales
   version: 1.0.0
-  description: Acción simulada para buscar albaranes de trabajo.
+  description: Permite buscar albaranes de trabajo reales desde STEL Order.
 
 servers:
-  - url: https://fake.stelorder.local
+  - url: https://app.stelorder.com/app
 
 paths:
-  /workDeliveryNotes:
-    get:
-      summary: Buscar albaranes de trabajo (Mock)
-      operationId: getWorkDeliveryNotes
-      x-openai-isMock: true
-      x-openai-data:
-        albaranes:
-          - id: 98765
-            title: "412029438/0010"
-            cliente: "WashTec España S.L."
-            estado: "Pendiente de facturar"
-            fecha: "2025-07-25"
-            total: 154.90
-          - id: 98766
-            title: "412029439/0010"
-            cliente: "WashTec España S.L."
-            estado: "Planificado"
-            fecha: "2025-07-28"
-            total: 240.00
+  /workOrders:
+    get:https://github.com/jordynoways/stel-api/blob/main/stel-order-api.yaml#L10C6-L24C21
+      summary: Obtener lista de albaranes de trabajo
+      operationId: getWorkOrders
       parameters:
         - name: title
           in: query
           required: false
           schema:
             type: string
-          description: Número de orden o título del albarán
+          description: Filtrar albaranes por título (número de orden)
       responses:
         '200':
-          description: Lista de albaranes simulada 
+          description: Lista de albaranes
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                - id: 12345
+                  title: "412029438/0010"
+                  cliente: "WashTec España S.L."
+                  estado: "Pendiente de facturar"
+                  fecha: "2025-07-25"
+                  total: 154.90
+      security:
+        - ApiKeyAuth: []
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
