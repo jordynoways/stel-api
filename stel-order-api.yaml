@@ -9,7 +9,7 @@ servers:
 
 paths:
   /workOrders:
-    get:https://github.com/jordynoways/stel-api/blob/main/stel-order-api.yaml#L10C6-L24C21
+    get:
       summary: Obtener lista de albaranes de trabajo
       operationId: getWorkOrders
       parameters:
@@ -42,3 +42,4 @@ components:
       type: apiKey
       in: header
       name: Authorization
+
