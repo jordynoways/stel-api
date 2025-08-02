@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
-  title: STEL Order API - Albaranes reales
+  title: STEL Order API
   version: 1.0.0
-  description: Permite buscar albaranes de trabajo reales desde STEL Order.
+  description: Consulta de albaranes de trabajo
 
 servers:
   - url: https://app.stelorder.com/app
@@ -11,23 +11,37 @@ paths:
   /workOrders:
     get:
       summary: Obtener lista de albaranes de trabajo
-      operationId: getWorkOrders
+      operationId: getWorkDeliveryNotes
+      security:
+        - ApiKeyAuth: []
       parameters:
         - name: title
           in: query
           required: false
           schema:
             type: string
-          description: Filtrar albaranes por título (número de orden)
+          description: Filtrar por título del albarán
       responses:
         '200':
           description: Lista de albaranes
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AlbaranResponse'
-      security:
-        - ApiKeyAuth: []
+                type: object
+                properties:
+                  workOrders:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        title:
+                          type: string
+                        total:
+                          type: number
+                        estado:
+                          type: string
 
 components:
   securitySchemes:
@@ -35,31 +49,3 @@ components:
       type: apiKey
       in: header
       name: Authorization
-
-  schemas:
-    Albaran:
-      type: object
-      properties:
-        id:
-          type: integer
-        title:
-          type: string
-        cliente:
-          type: string
-        estado:
-          type: string
-        fecha:
-          type: string
-        total:
-          type: number
-      required:
-        - id
-        - title
-
-    AlbaranResponse:
-      type: object
-      properties:
-        albaranes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Albaran'
