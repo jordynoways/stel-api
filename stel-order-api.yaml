@@ -3,41 +3,35 @@ info:
   title: STEL Order API Integration
   version: 1.0.0
   description: |
-    This OpenAPI specification defines the endpoints used by the GPT agent
-    to interact with the STEL Order service.  The API allows searching for
-    work delivery orders (albaranes), retrieving detailed information, listing
-    pending work delivery orders, uploading attachments and creating new work delivery orders.
-    All requests must include an API key provided by STEL Order in the
-    custom `APIKEY` header. The key must be sent as `APIKEY: <your-api-key>` without any prefix.
+    Esta especificación OpenAPI define los endpoints usados por el agente GPT
+    para interactuar con el servicio STEL Order. Permite buscar albaranes, 
+    obtener detalles, listar albaranes pendientes de facturar, subir adjuntos y crear albaranes.
+    Todas las peticiones deben incluir la clave de API de STEL Order en la cabecera `APIKEY` sin prefijo.
+
 servers:
   - url: https://app.stelorder.com/app
 
 paths:
-  ## Search work delivery orders by title or order number
   /workDeliveryOrders/search:
     get:
-      summary: Search work orders
-      description: |
-        Searches work delivery orders (albaranes de trabajo) by order number or title. At least one
-        of the query parameters `title` or `orderNumber` must be provided. The endpoint
-        returns a list of matching work delivery orders with summary information.
+      summary: Buscar albaranes de trabajo
       operationId: searchWorkOrders
       parameters:
         - name: title
           in: query
-          description: Search by the title of the work delivery order.
+          description: Buscar por título del albarán.
           required: false
           schema:
             type: string
         - name: orderNumber
           in: query
-          description: Search by the internal order number of the work delivery order.
+          description: Buscar por número de orden interna.
           required: false
           schema:
             type: string
       responses:
-        '200':
-          description: A list of work delivery orders matching the search criteria.
+        "200":
+          description: Lista de albaranes coincidentes.
           content:
             application/json:
               schema:
@@ -46,60 +40,49 @@ paths:
                   results:
                     type: array
                     items:
-                      $ref: '#/components/schemas/WorkOrder'
+                      $ref: "#/components/schemas/WorkOrder"
                   count:
                     type: integer
-                    description: Number of results returned in this response.
-        '400':
-          description: Invalid search parameters supplied.
+        "400":
+          description: Parámetros inválidos.
       security:
         - ApiKeyAuth: []
 
-  ## Retrieve details of a specific work delivery order
   /workDeliveryOrders/{id}:
     get:
-      summary: Get work delivery order details
-      description: Retrieves detailed information about a specific work delivery order by its unique identifier.
+      summary: Obtener detalles del albarán
       operationId: getWorkOrderDetails
       parameters:
         - name: id
           in: path
-          description: Unique identifier of the work delivery order to fetch.
           required: true
           schema:
             type: string
       responses:
-        '200':
-          description: Detailed information about the requested work delivery order.
+        "200":
+          description: Detalles del albarán.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WorkOrder'
-        '404':
-          description: Work delivery order not found.
+                $ref: "#/components/schemas/WorkOrder"
+        "404":
+          description: No encontrado.
       security:
         - ApiKeyAuth: []
 
-  ## List work delivery orders pending invoicing
   /workDeliveryOrders/pending:
     get:
-      summary: List pending work orders
-      description: |
-        Returns a list of work delivery orders that are pending invoicing. The `documentStateId`
-        parameter allows filtering by the state identifier of the document.  This endpoint
-        is useful for retrieving all pending work delivery orders for billing.
+      summary: Listar albaranes pendientes de facturar
       operationId: listPendingWorkOrders
       parameters:
         - name: documentStateId
           in: query
-          description: Document state identifier used to filter results. Use the value for
-            "pending to invoice" as provided by STEL Order.
           required: false
           schema:
             type: string
       responses:
-        '200':
-          description: A list of pending work delivery orders.
+        "200":
+          description: Lista de albaranes pendientes.
           content:
             application/json:
               schema:
@@ -108,25 +91,21 @@ paths:
                   results:
                     type: array
                     items:
-                      $ref: '#/components/schemas/WorkOrder'
+                      $ref: "#/components/schemas/WorkOrder"
                   count:
                     type: integer
-        '400':
-          description: Invalid request parameters.
+        "400":
+          description: Parámetros inválidos.
       security:
         - ApiKeyAuth: []
 
-  ## Upload an attachment to a work delivery order
   /workDeliveryOrders/{id}/attachments:
     post:
-      summary: Upload work delivery order attachment
-      description: Adds a file attachment to the specified work delivery order. Attachments can include
-        files such as images or PDFs that relate to the work delivery order.
+      summary: Subir adjunto a albarán
       operationId: uploadWorkOrderAttachment
       parameters:
         - name: id
           in: path
-          description: Unique identifier of the work delivery order to which the attachment will be uploaded.
           required: true
           schema:
             type: string
@@ -142,10 +121,9 @@ paths:
                 file:
                   type: string
                   format: binary
-                  description: The file to upload as an attachment.
       responses:
-        '201':
-          description: Attachment uploaded successfully.
+        "201":
+          description: Adjunto subido correctamente.
           content:
             application/json:
               schema:
@@ -153,42 +131,36 @@ paths:
                 properties:
                   id:
                     type: string
-                    description: Unique identifier of the created attachment.
                   filename:
                     type: string
                   url:
                     type: string
-                    description: URL where the attachment can be accessed.
-        '404':
-          description: Work delivery order not found.
-        '415':
-          description: Unsupported media type or invalid file upload.
+        "404":
+          description: Albarán no encontrado.
+        "415":
+          description: Formato no soportado.
       security:
         - ApiKeyAuth: []
 
-  ## Create a new work delivery order
   /workDeliveryOrders:
     post:
-      summary: Create a work delivery order
-      description: Creates a new work delivery order in STEL Order. The payload should include
-        mandatory fields such as title, client, and date, and may include additional
-        optional details such as line items and totals.
+      summary: Crear albarán de trabajo
       operationId: createWorkOrder
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewWorkOrder'
+              $ref: "#/components/schemas/NewWorkOrder"
       responses:
-        '201':
-          description: Work delivery order created successfully.
+        "201":
+          description: Albarán creado correctamente.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WorkOrder'
-        '400':
-          description: Invalid request payload.
+                $ref: "#/components/schemas/WorkOrder"
+        "400":
+          description: Payload inválido.
       security:
         - ApiKeyAuth: []
 
@@ -197,71 +169,52 @@ components:
     ApiKeyAuth:
       type: apiKey
       in: header
-      # The STEL Order API expects the key to be sent in a custom header called
-      # `APIKEY` without any prefix. Using another header name (e.g. Authorization)
-      # will cause the server to reject the request as invalid. See the official
-      # documentation at https://app.stelorder.com/app/indexapi.html for details.
       name: APIKEY
       description: |
-        All requests must supply an API key in the `APIKEY` header without any
-        prefix. For example, a request should send a header like:
-        
-        `APIKEY: 0RjnBmi37UswuylVpjIyi7I6gvX54i2ShBnJLsC0`
-        
-        Esta es la clave de API proporcionada para tu entorno de STEL Order.
+        Todas las solicitudes deben incluir la clave API en el encabezado `APIKEY`.
+        Ejemplo:
+        APIKEY: 0RjnBmi37UswuylVpjIyi7I6gvX54i2ShBnJLsC0
+
   schemas:
-    ## Schema representing a work order
     WorkOrder:
       type: object
       properties:
         id:
           type: string
-          description: Unique identifier of the work delivery order.
         title:
           type: string
-          description: Title or reference of the work delivery order.
         client:
           type: string
-          description: Name of the client associated with the work delivery order.
         total:
           type: number
           format: float
-          description: Total amount for the work delivery order.
         date:
           type: string
           format: date
-          description: Date when the work delivery order was created.
         status:
           type: string
-          description: Current status of the work delivery order (e.g., pending, invoiced).
         documentStateId:
           type: string
-          description: Internal document state identifier used by STEL Order.
         items:
           type: array
-          description: List of items included in the work delivery order.
           items:
-            $ref: '#/components/schemas/WorkOrderItem'
-    ## Schema representing an item within a work delivery order
+            $ref: "#/components/schemas/WorkOrderItem"
+
     WorkOrderItem:
       type: object
       properties:
         description:
           type: string
-          description: Description of the work performed or item supplied.
         quantity:
           type: number
           format: float
-          description: Quantity of the item or hours of work.
         unitPrice:
           type: number
           format: float
-          description: Unit price of the item or hourly rate.
         total:
           type: number
           format: float
-          description: Total price for this item (quantity × unitPrice).
-    ## Schema representing the payload required to create a new work delivery order
+
     NewWorkOrder:
       type: object
       required:
@@ -271,18 +224,14 @@ components:
       properties:
         title:
           type: string
-          description: Title or reference for the new work delivery order.
         client:
           type: string
-          description: Name of the client for whom the work delivery order is created.
         date:
           type: string
           format: date
-          description: Date of the work delivery order (YYYY-MM-DD).
         items:
           type: array
           items:
-            $ref: '#/components/schemas/WorkOrderItem'
+            $ref: "#/components/schemas/WorkOrderItem"
         notes:
           type: string
-          description: Additional notes or comments about the work delivery order.
