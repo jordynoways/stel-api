@@ -1,31 +1,194 @@
 openapi: 3.1.0
 info:
-  title: STEL Order API - Albaranes reales
+  title: STEL Order API Integration
   version: 1.0.0
-  description: Permite buscar albaranes de trabajo reales desde STEL Order.
-
+  description: |
+    This OpenAPI specification defines the endpoints used by the GPT agent
+    to interact with the STEL Order service.  The API allows searching for
+    work orders (albaranes), retrieving detailed information, listing
+    pending work orders, uploading attachments and creating new work orders.
+    All requests must include an API key provided by STEL Order in the
+    `Authorization` header using the format `ApiKey <your-api-key>`.
 servers:
   - url: https://app.stelorder.com/app
 
 paths:
-  /workOrders:
+  ## Search work orders by title or order number
+  /work-orders/search:
     get:
-      summary: Obtener lista de albaranes de trabajo
-      operationId: getWorkOrders
+      summary: Search work orders
+      description: |
+        Searches work orders (albaranes de trabajo) by order number or title. At least one
+        of the query parameters `title` or `orderNumber` must be provided. The endpoint
+        returns a list of matching work orders with summary information.
+      operationId: searchWorkOrders
       parameters:
         - name: title
           in: query
+          description: Search by the title of the work order.
           required: false
           schema:
             type: string
-          description: Filtrar albaranes por título (número de orden)
+        - name: orderNumber
+          in: query
+          description: Search by the internal order number of the work order.
+          required: false
+          schema:
+            type: string
       responses:
         '200':
-          description: Lista de albaranes
+          description: A list of work orders matching the search criteria.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AlbaranResponse'
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WorkOrder'
+                  count:
+                    type: integer
+                    description: Number of results returned in this response.
+        '400':
+          description: Invalid search parameters supplied.
+      security:
+        - ApiKeyAuth: []
+
+  ## Retrieve details of a specific work order
+  /work-orders/{id}:
+    get:
+      summary: Get work order details
+      description: Retrieves detailed information about a specific work order by its unique identifier.
+      operationId: getWorkOrderDetails
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the work order to fetch.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detailed information about the requested work order.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkOrder'
+        '404':
+          description: Work order not found.
+      security:
+        - ApiKeyAuth: []
+
+  ## List work orders pending invoicing
+  /work-orders/pending:
+    get:
+      summary: List pending work orders
+      description: |
+        Returns a list of work orders that are pending invoicing. The `documentStateId`
+        parameter allows filtering by the state identifier of the document.  This endpoint
+        is useful for retrieving all pending work orders for billing.
+      operationId: listPendingWorkOrders
+      parameters:
+        - name: documentStateId
+          in: query
+          description: Document state identifier used to filter results. Use the value for
+            "pending to invoice" as provided by STEL Order.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of pending work orders.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WorkOrder'
+                  count:
+                    type: integer
+        '400':
+          description: Invalid request parameters.
+      security:
+        - ApiKeyAuth: []
+
+  ## Upload an attachment to a work order
+  /work-orders/{id}/attachments:
+    post:
+      summary: Upload work order attachment
+      description: Adds a file attachment to the specified work order. Attachments can include
+        files such as images or PDFs that relate to the work order.
+      operationId: uploadWorkOrderAttachment
+      parameters:
+        - name: id
+          in: path
+          description: Unique identifier of the work order to which the attachment will be uploaded.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The file to upload as an attachment.
+      responses:
+        '201':
+          description: Attachment uploaded successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Unique identifier of the created attachment.
+                  filename:
+                    type: string
+                  url:
+                    type: string
+                    description: URL where the attachment can be accessed.
+        '404':
+          description: Work order not found.
+        '415':
+          description: Unsupported media type or invalid file upload.
+      security:
+        - ApiKeyAuth: []
+
+  ## Create a new work order
+  /work-orders:
+    post:
+      summary: Create a work order
+      description: Creates a new work order in STEL Order. The payload should include
+        mandatory fields such as title, client, and date, and may include additional
+        optional details such as line items and totals.
+      operationId: createWorkOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewWorkOrder'
+      responses:
+        '201':
+          description: Work order created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkOrder'
+        '400':
+          description: Invalid request payload.
       security:
         - ApiKeyAuth: []
 
@@ -35,31 +198,84 @@ components:
       type: apiKey
       in: header
       name: Authorization
-
+      description: |
+        All requests must supply an API key in the `Authorization` header using the format
+        `ApiKey 0RjnBmi37UswuylVpjIyi7I6gvX54i2ShBnJLsC0`.  Esta es la clave de API proporcionada
+        para tu entorno de STEL Order.
   schemas:
-    Albaran:
+    ## Schema representing a work order
+    WorkOrder:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          description: Unique identifier of the work order.
         title:
           type: string
-        cliente:
+          description: Title or reference of the work order.
+        client:
           type: string
-        estado:
-          type: string
-        fecha:
-          type: string
+          description: Name of the client associated with the work order.
         total:
           type: number
-      required:
-        - id
-        - title
-
-    AlbaranResponse:
+          format: float
+          description: Total amount for the work order.
+        date:
+          type: string
+          format: date
+          description: Date when the work order was created.
+        status:
+          type: string
+          description: Current status of the work order (e.g., pending, invoiced).
+        documentStateId:
+          type: string
+          description: Internal document state identifier used by STEL Order.
+        items:
+          type: array
+          description: List of items included in the work order.
+          items:
+            $ref: '#/components/schemas/WorkOrderItem'
+    ## Schema representing an item within a work order
+    WorkOrderItem:
       type: object
       properties:
-        albaranes:
+        description:
+          type: string
+          description: Description of the work performed or item supplied.
+        quantity:
+          type: number
+          format: float
+          description: Quantity of the item or hours of work.
+        unitPrice:
+          type: number
+          format: float
+          description: Unit price of the item or hourly rate.
+        total:
+          type: number
+          format: float
+          description: Total price for this item (quantity × unitPrice).
+    ## Schema representing the payload required to create a new work order
+    NewWorkOrder:
+      type: object
+      required:
+        - title
+        - client
+        - date
+      properties:
+        title:
+          type: string
+          description: Title or reference for the new work order.
+        client:
+          type: string
+          description: Name of the client for whom the work order is created.
+        date:
+          type: string
+          format: date
+          description: Date of the work order (YYYY-MM-DD).
+        items:
           type: array
           items:
-            $ref: '#/components/schemas/Albaran'
+            $ref: '#/components/schemas/WorkOrderItem'
+        notes:
+          type: string
+          description: Additional notes or comments about the work order.

@@ -200,8 +200,8 @@ components:
       name: Authorization
       description: |
         All requests must supply an API key in the `Authorization` header using the format
-        `ApiKey pYPDPNWM4jqgHuSVGQVsKAOLpkwUIMgMOQ7aKmkX`.  Replace the example key
-        with your actual key when deploying this specification.
+        `ApiKey 0RjnBmi37UswuylVpjIyi7I6gvX54i2ShBnJLsC0`.  Esta es la clave de API proporcionada
+        para tu entorno de STEL Order.
   schemas:
     ## Schema representing a work order
     WorkOrder:
